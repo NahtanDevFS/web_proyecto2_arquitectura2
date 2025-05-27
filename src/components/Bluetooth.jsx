@@ -4,8 +4,6 @@ import Swal from 'sweetalert2';
 
 
 export default function Bluetooth() {
-  const [output, setOutput] = useState('');
-  const [port, setPort]     = useState(null);
   const [writer, setWriter] = useState(null);
   const [line1,  setLine1]  = useState('');
   const [line2,  setLine2]  = useState('');
@@ -36,8 +34,6 @@ export default function Bluetooth() {
   useEffect(() => {
     if (tempRef.current) {
       tempRef.current.scrollTop = tempRef.current.scrollHeight;
-      // para scroll suave: 
-      // tempRef.current.scrollTo({ top: tempRef.current.scrollHeight, behavior: 'smooth' });
     }
   }, [tempLog]);
 
@@ -59,7 +55,6 @@ export default function Bluetooth() {
     try {
       const selectedPort = await navigator.serial.requestPort();
       await selectedPort.open({ baudRate: 9600 });
-      setPort(selectedPort);
 
       // lector
       const textDecoder = new TextDecoderStream();
@@ -103,7 +98,7 @@ export default function Bluetooth() {
     const safe1 = sanitizeLCDText(line1);
     const safe2 = sanitizeLCDText(line2);
 
-    // Si cambió alguno, había carácter inválido
+    // Si cambió alguno, había un carácter inválido
     if (safe1 !== line1 || safe2 !== line2) {
       Swal.fire({
         icon: 'error',
@@ -113,7 +108,7 @@ export default function Bluetooth() {
       return;
     }
 
-    // Si todo boen, armamos las líneas de 16 chars
+    // Si todo está bien, armamos las líneas de 16 chars
     const l1 = safe1.padEnd(16).slice(0,16);
     const l2 = safe2.padEnd(16).slice(0,16);
     await writer.write(`#:${l1}${l2}\n`);
@@ -126,12 +121,12 @@ export default function Bluetooth() {
 
       <div className='button_container' style={{ marginTop: '1rem' }}>
         <div>
-          <button className='button' onClick={() => writer?.write('1')}>Encender LED</button>
-          <button className='button' onClick={() => writer?.write('2')}>Apagar LED</button>
+          <button className='button' onClick={() => writer?.write('1\n')}>Encender LED</button>
+          <button className='button' onClick={() => writer?.write('2\n')}>Apagar LED</button>
         </div>
         <div>
-          <button className='button' onClick={() => writer?.write('3')}>Servo 0°</button>
-          <button className='button' onClick={() => writer?.write('4')}>Servo 90°</button>
+          <button className='button' onClick={() => writer?.write('3\n')}>Servo 0°</button>
+          <button className='button' onClick={() => writer?.write('4\n')}>Servo 90°</button>
         </div>
       </div>
 
@@ -168,6 +163,7 @@ export default function Bluetooth() {
       <div>
           <h3>Temperatura</h3>
           <textarea
+            className='input_text_area_bluetooth'
             value={tempLog}
             ref={tempRef}
             readOnly
@@ -179,6 +175,7 @@ export default function Bluetooth() {
         <div>
           <h3>Distancia</h3>
           <textarea
+            className='input_text_area_bluetooth'
             value={distLog}
             ref={distRef}
             readOnly
@@ -190,6 +187,7 @@ export default function Bluetooth() {
         <div>
           <h3>LDR (KΩ)</h3>
           <textarea
+            className='input_text_area_bluetooth'
             value={ldrLog}
             ref={ldrRef}
             readOnly
